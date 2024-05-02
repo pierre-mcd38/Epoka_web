@@ -35,12 +35,9 @@
 
         $id_salarie = $_SESSION['util_id'];
 
-        $stmt = $pdo->prepare("SELECT salarie.nom_salarie, salarie.prenom_salarie, mission.debut, mission.fin, commune.comNom, commune.comCp, mission.id_mission, mission.payer FROM salarie, mission, commune WHERE mission.id_salarie = salarie.id_salarie AND mission.id_commune = commune.comId AND mission.valid = 1 ORDER BY mission.debut ");
+        $stmt = $pdo->prepare("SELECT utilisateurs.util_nom, utilisateurs.util_prenom, mission.mis_dateDepart, mission.mis_dateRetour, commune.com_nom, commune.com_CP, mission.mis_id, mission.mis_paye FROM utilisateurs, mission, commune WHERE mission.mis_idUtilisateur = utilisateurs.util_id AND mission.mis_idCommune = commune.com_id AND mission.mis_valide = 1 ORDER BY mission.mis_dateDepart ");
         $stmt->execute();
-
-        $calculMontant = 'SELECT (((DATEDIFF(mission.fin, mission.debut) + 1) * parametre.forfait_journalier) + (ROUND(trajet.distance * parametre.idem_kilometre)*2)) as montant FROM mission JOIN trajet ON (trajet.id_arrive_com = mission.id_commune OR trajet.id_debut_com = mission.id_commune) JOIN salarie ON (salarie.id_agence = trajet.id_arrive_com OR salarie.id_agence = trajet.id_debut_com) AND salarie.id_salarie = mission.id_salarie JOIN parametre WHERE mission.id_mission = :idMis AND (trajet.id_debut_com = salarie.id_agence OR trajet.id_arrive_com = salarie.id_agence)';
     
-        
         echo ('<table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl}">
         <thead>
             <tr>
@@ -56,46 +53,49 @@
         <tbody>');
         
         while ($row = $stmt->fetch()) {
-        
+            $dateDepart = new DateTime($row['mis_dateDepart']);
+            $dateRetour = new DateTime($row['mis_dateRetour']);
+            $nbJours = $dateDepart->diff($dateRetour)->days; // Calcul du nombre de jours de la mission
             
-            $reqMontant = $pdo->prepare($calculMontant);
-            $reqMontant->bindParam(':idMis', $row['id_mission'], PDO::PARAM_INT);
-            $reqMontant->execute();
-            $montant = $reqMontant->fetch();
+            // Récupérer le prix d'hébergement depuis la table parametres
+            $stmtParam = $pdo->prepare("SELECT par_MtHebergement FROM parametres");
+            $stmtParam->execute();
+            $parametres = $stmtParam->fetch();
+            $prixHebergement = $parametres['par_MtHebergement'] * ($nbJours - 1); // Calcul du prix de l'hébergement
             
-            if ($row['payer'] == 0) {
+            // Récupérer la distance entre les deux villes de la mission depuis la table distance
+            $stmtDistance = $pdo->prepare("SELECT dis_km FROM distance WHERE dis_idCommune1 = :idCommune1 AND dis_idCommune2 = :idCommune2");
+            $stmtDistance->bindParam(':idCommune1', $row['mis_idCommune'], PDO::PARAM_INT);
+            $stmtDistance->bindParam(':idCommune2', $row['mis_idCommune'], PDO::PARAM_INT);
+            $stmtDistance->execute();
+            $distance = $stmtDistance->fetch();
+            
+            if ($distance) {
+                $montant = ($distance['dis_km'] * $parametres['par_MtauKM']) + $prixHebergement; // Calcul du montant total
+            } else {
+                $montant = 'Distance non définie'; // Si la distance n'est pas définie
+            }
+            
+            if ($row['mis_paye'] == 0) {
                 $payer = '<td>
                     <form action="updatePayer.php" method="post">
-                        <button value="'.$row["id_mission"].'" name="payer" type="submit" class="btn btn-sm btn-outline-dark">Rembourser</button>
+                        <button value="'.$row["mis_id"].'" name="payer" type="submit" class="btn btn-sm btn-outline-dark">Rembourser</button>
                     </form>
                 </td>';
             } else {
                 $payer = '<td>Remboursée</td>';
             }
         
-            echo ('<tr><td>' . $row["nom_salarie"] . '</td>
-                <td>' . $row["prenom_salarie"] . '</td>
-                <td>' . $row["debut"] . '</td>
-                <td>' . $row["fin"] . '</td>
-                <td>' . $row["comNom"] . ' ('. $row["comCp"] .')' . '</td>');
-        
-                // var_dump($montant); die;
-            if ($montant) {
-                echo '<td>' . $montant[0] . ' €</td>' . $payer . '</tr>';
-            } else {
-                echo '<td>Distance non définie</td><td></td></tr>';
-            }
+            echo '<tr><td>' . $row["util_nom"] . '</td>
+                <td>' . $row["util_prenom"] . '</td>
+                <td>' . $row["mis_dateDepart"] . '</td>
+                <td>' . $row["mis_dateRetour"] . '</td>
+                <td>' . $row["com_nom"] . ' ('. $row["com_CP"] .')' . '</td>
+                <td>' . $montant . ' €</td>' . $payer . '</tr>';
         }
         
-        echo ('</tbody></table>');
+        echo '</tbody></table>';
         ?>
     
-
-        
-        </table>
     </div>
 
-    
-	
-    <?php include('footer.php'); ?>
-       
