@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    
     <?php
     include('header.php');
     session_start();
@@ -43,7 +44,7 @@
         $id_salarie = $_SESSION['util_id'];
 
         $stmt = $pdo->prepare("SELECT utilisateurs.util_nom, utilisateurs.util_prenom, mission.mis_dateDepart, mission.mis_dateRetour, commune.com_nom, commune.com_CP, mission.mis_id, mission.mis_valide FROM utilisateurs INNER JOIN mission ON utilisateurs.util_id = mission.mis_idUtilisateur INNER JOIN commune ON mission.mis_idCommune = commune.com_id WHERE utilisateurs.util_idResponsable = :id_salarie ORDER BY mission.mis_dateDepart");
-        $stmt->execute(array(':id_salarie' => $id_salarie)); // Correction ici
+        $stmt->execute(array(':id_salarie' => $id_salarie)); 
 
         echo '<table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl} rounded-2">
         <thead>
@@ -59,9 +60,9 @@
         <tbody>';
 
         while ($row = $stmt->fetch()) {
-            if ($row['mis_valide'] == 0) { // Correction du nom de colonne
+            if ($row['mis_valide'] == 0) {
                 $validation = '<td>
-                <form action="majValidation.php" method="post">
+                <form action="valider.php" method="post">
                 <button value="' . $row["mis_id"] . '" name="valider" type="submit" class="btn btn-sm btn-outline-dark">Valider</button>
                 </form>';
             } else {

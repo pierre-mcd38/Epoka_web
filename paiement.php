@@ -38,7 +38,7 @@
         $stmt = $pdo->prepare("SELECT utilisateurs.util_nom, utilisateurs.util_prenom, mission.mis_dateDepart, mission.mis_dateRetour, commune.com_nom, commune.com_CP, mission.mis_id, mission.mis_paye FROM utilisateurs, mission, commune WHERE mission.mis_idUtilisateur = utilisateurs.util_id AND mission.mis_idCommune = commune.com_id AND mission.mis_valide = 1 ORDER BY mission.mis_dateDepart ");
         $stmt->execute();
     
-        echo ('<table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl}">
+        echo '<table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl}">
         <thead>
             <tr>
                 <th>Nom du salarié</th>
@@ -50,7 +50,7 @@
                 <th>Remboursement</th>
             </tr>
         </thead>
-        <tbody>');
+        <tbody>';
         
         while ($row = $stmt->fetch()) {
             $dateDepart = new DateTime($row['mis_dateDepart']);
@@ -64,9 +64,9 @@
             $prixHebergement = $parametres['par_MtHebergement'] * ($nbJours - 1); // Calcul du prix de l'hébergement
             
             // Récupérer la distance entre les deux villes de la mission depuis la table distance
-            $stmtDistance = $pdo->prepare("SELECT dis_km FROM distance WHERE dis_idCommune1 = :idCommune1 AND dis_idCommune2 = :idCommune2");
-            $stmtDistance->bindParam(':idCommune1', $row['mis_idCommune'], PDO::PARAM_INT);
-            $stmtDistance->bindParam(':idCommune2', $row['mis_idCommune'], PDO::PARAM_INT);
+            $stmtDistance = $pdo->prepare("SELECT dis_km FROM distance WHERE (dis_idCommune1 = :idAgence AND dis_idCommune2 = :idCommuneMission) OR (dis_idCommune1 = :idCommuneMission AND dis_idCommune2 = :idAgence)");
+            $stmtDistance->bindParam(':idAgence', $row['util_idAgence'], PDO::PARAM_INT);
+            $stmtDistance->bindParam(':idCommuneMission', $row['mis_idCommune'], PDO::PARAM_INT);
             $stmtDistance->execute();
             $distance = $stmtDistance->fetch();
             
@@ -78,7 +78,7 @@
             
             if ($row['mis_paye'] == 0) {
                 $payer = '<td>
-                    <form action="updatePayer.php" method="post">
+                    <form action="payer.php" method="post">
                         <button value="'.$row["mis_id"].'" name="payer" type="submit" class="btn btn-sm btn-outline-dark">Rembourser</button>
                     </form>
                 </td>';

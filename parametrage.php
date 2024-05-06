@@ -71,7 +71,7 @@
                      
                      $query = $pdo->query("SELECT * FROM commune ORDER BY com_Nom");
                      while ($commune = $query->fetch()) {
-                           echo '<option value="'.$commune['com_id'].'">'.$commune['com_Nom']. ' ('.$commune['com_CP'].')'.'</option>';
+                           echo '<option value="'.$commune['com_id'].'">'.$commune['com_nom']. ' ('.$commune['com_CP'].')'.'</option>';
                      }
                      ?>
                   </select>
@@ -83,9 +83,9 @@
                      <option value="">Sélectionner une commune</option>
                      <?php
                      
-                     $query = $pdo->query("SELECT * FROM commune ORDER BY com_Nom");
+                     $query = $pdo->query("SELECT * FROM commune ORDER BY com_nom");
                      while ($commune = $query->fetch()) {
-                           echo '<option value="'.$commune['com_id'].'">'.$commune['com_Nom']. ' ('.$commune['com_CP'].')'.'</option>';
+                           echo '<option value="'.$commune['com_id'].'">'.$commune['com_nom']. ' ('.$commune['com_CP'].')'.'</option>';
                      }
                      ?>
                   </select>
@@ -113,7 +113,7 @@
                </thead>
                <tbody>
                   <?php
-                  $stmt = $pdo->prepare("SELECT depart.comNom as De, arrive.comNom as A, trajet.distance, trajet.id_arrive_com, trajet.id_debut_com FROM trajet, commune as depart, commune as arrive WHERE trajet.id_debut_com = depart.comId AND trajet.id_arrive_com = arrive.comId; ");
+                  $stmt = $pdo->prepare("SELECT distance.dis_idCommune1 as De, distance.dis_idCommune2 as A, trajet.distance, trajet.id_arrive_com, trajet.id_debut_com FROM distance WHERE trajet.id_debut_com = depart.comId AND trajet.id_arrive_com = arrive.comId; ");
                   $stmt->execute();
                   
                   while ($row = $stmt->fetch()) {
