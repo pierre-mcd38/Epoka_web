@@ -1,21 +1,24 @@
 <!doctype html>
 <html lang="fr">
-<title>Paiement des Frais</title>
-<?php include 'header.php';
-// Initialiser la session
-session_start();
-// Vérifiez si l'utilisateur est connecté, sinon redirigez-le vers la page de connexion
-if (!isset($_SESSION["util_id"]) || !isset($_SESSION["util_comptable"])) {
-    header("Location: index.php");
-    exit();
-}
-if ($_SESSION["util_comptable"] != 1) {
-    echo '<div class="alert m-5 alert-danger" role="alert">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Paiement des Frais</title>
+    <?php include 'header.php';
+    // Initialiser la session
+    session_start();
+    // Vérifiez si l'utilisateur est connecté, sinon redirigez-le vers la page de connexion
+    if (!isset($_SESSION["util_id"]) || !isset($_SESSION["util_comptable"])) {
+        header("Location: index.php");
+        exit();
+    }
+    if ($_SESSION["util_comptable"] != 1) {
+        echo '<div class="alert alert-danger m-5" role="alert">
         Vous n\'êtes pas autorisé
         </div>';
-    exit();
-}
-?>
+        exit();
+    }
+    ?>
 
 <body>
     <div class="container my-5">
@@ -36,53 +39,54 @@ if ($_SESSION["util_comptable"] != 1) {
         $id_salarie = $_SESSION['util_id'];
 
         $stmt = $pdo->prepare("
-        SELECT
-            utilisateurs.util_nom,
-            utilisateurs.util_prenom,
-            mission.mis_dateDepart,
-            mission.mis_dateRetour,
-            commune.com_nom,
-            commune.com_CP,
-            mission.mis_id,
-            mission.mis_paye,
-            distance.dis_km,
-            agence.age_id,
-            agence.age_idCommune,
-            distance.dis_idCommune1,
-            distance.dis_idCommune2
-        FROM
-            utilisateurs
-        INNER JOIN
-            mission ON mission.mis_idUtilisateur = utilisateurs.util_id
-        INNER JOIN
-            commune ON mission.mis_idCommune = commune.com_id
-        LEFT JOIN
-            distance ON (distance.dis_idCommune1 = utilisateurs.util_idAgence AND distance.dis_idCommune2 = mission.mis_idCommune) 
-                        OR (distance.dis_idCommune1 = mission.mis_idCommune AND distance.dis_idCommune2 = utilisateurs.util_idAgence)
-        LEFT JOIN
-            agence ON utilisateurs.util_idAgence = agence.age_id
-        WHERE
-            mission.mis_valide = 1
-        ORDER BY
-            mission.mis_dateDepart
-    ");
+            SELECT
+                utilisateurs.util_nom,
+                utilisateurs.util_prenom,
+                mission.mis_dateDepart,
+                mission.mis_dateRetour,
+                commune.com_nom,
+                commune.com_CP,
+                mission.mis_id,
+                mission.mis_paye,
+                distance.dis_km,
+                agence.age_id,
+                agence.age_idCommune,
+                distance.dis_idCommune1,
+                distance.dis_idCommune2
+            FROM
+                utilisateurs
+            INNER JOIN
+                mission ON mission.mis_idUtilisateur = utilisateurs.util_id
+            INNER JOIN
+                commune ON mission.mis_idCommune = commune.com_id
+            LEFT JOIN
+                distance ON (distance.dis_idCommune1 = utilisateurs.util_idAgence AND distance.dis_idCommune2 = mission.mis_idCommune) 
+                            OR (distance.dis_idCommune1 = mission.mis_idCommune AND distance.dis_idCommune2 = utilisateurs.util_idAgence)
+            LEFT JOIN
+                agence ON utilisateurs.util_idAgence = agence.age_id
+            WHERE
+                mission.mis_valide = 1
+            ORDER BY
+                mission.mis_dateDepart
+        ");
         $stmt->execute();
 
-        echo '<table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl}">
-        <thead>
-            <tr>
-                <th>Nom du salarié</th>
-                <th>Prénom du salarié</th>
-                <th>Début de la mission</th>
-                <th>Fin de la mission</th>
-                <th>Lieu de la mission</th>
-                <th>Montant</th>
-                <th>Remboursement</th>
-            </tr>
-        </thead>
-        <tbody>';
+        echo '<table class="table table-striped text-center">
+            <thead class="thead-light">
+                <tr>
+                    <th>Nom du salarié</th>
+                    <th>Prénom du salarié</th>
+                    <th>Début de la mission</th>
+                    <th>Fin de la mission</th>
+                    <th>Lieu de la mission</th>
+                    <th>Montant</th>
+                    <th>Remboursement</th>
+                </tr>
+            </thead>
+            <tbody>';
 
-        function dateMySQLToFrLong ($date) {
+        function dateMySQLToFrLong($date)
+        {
             //--- Les noms des jours en français
             $jour[0] = "Dimanche";
             $jour[1] = "Lundi";
@@ -104,23 +108,27 @@ if ($_SESSION["util_comptable"] != 1) {
             $mois[10] = "octobre";
             $mois[11] = "novembre";
             $mois[12] = "décembre";
-        
-            $d1=date ("w/j/n/Y",strtotime ($date));
-            $d2=explode ("/",$d1);
-            return $jour [$d2[0]]." ".$d2[1]." ".$mois[$d2[2]]." ".$d2[3];
+
+            $d1 = date("w/j/n/Y", strtotime($date));
+            $d2 = explode("/", $d1);
+            return $jour[$d2[0]] . " " . $d2[1] . " " . $mois[$d2[2]] . " " . $d2[3];
         }
-        
-        function formaterDateFr ($date) { // j/m/aa vers jj/mm/aaaa
-            if (strpos ($date,"/")<2) $date="0".$date;
-            $lg=strlen($date);
-            $result=substr($date,0,3);
-            $date=substr($date,3,$lg);
-            if (strpos ($date,"/")<2) $date="0".$date;
-            $lg=strlen($date);
-            $result=$result.substr($date,0,3);
-            $date=substr($date,3,$lg);
-            if (strlen ($date)==2) $date="20".$date;
-            $result=$result.$date;
+
+        function formaterDateFr($date)
+        { // j/m/aa vers jj/mm/aaaa
+            if (strpos($date, "/") < 2)
+                $date = "0" . $date;
+            $lg = strlen($date);
+            $result = substr($date, 0, 3);
+            $date = substr($date, 3, $lg);
+            if (strpos($date, "/") < 2)
+                $date = "0" . $date;
+            $lg = strlen($date);
+            $result = $result . substr($date, 0, 3);
+            $date = substr($date, 3, $lg);
+            if (strlen($date) == 2)
+                $date = "20" . $date;
+            $result = $result . $date;
             return $result;
         }
 
@@ -128,7 +136,7 @@ if ($_SESSION["util_comptable"] != 1) {
             $dateDepart = new DateTime($row['mis_dateDepart']);
             $dateRetour = new DateTime($row['mis_dateRetour']);
             $nbNuits = $dateDepart->diff($dateRetour)->days + 1; // Calcul du nombre de nuits
-
+        
             // Récupérer les paramètres
             $stmtParam = $pdo->prepare("SELECT par_MtauKM, par_MtHebergement FROM parametres");
             $stmtParam->execute();
@@ -153,21 +161,30 @@ if ($_SESSION["util_comptable"] != 1) {
             }
             if ($row['mis_paye'] == 0) {
                 $payer = '<td>
-                    <form action="payer.php" method="post">
-                        <button value="' . $row["mis_id"] . '" name="payer" type="submit" class="btn btn-sm btn-outline-dark">Rembourser</button>
-                    </form>
-                </td>';
+                        <form action="payer.php" method="post">
+                            <button value="' . $row["mis_id"] . '" name="payer" type="submit" class="btn btn-sm btn-outline-dark">Rembourser</button>
+                        </form>
+                    </td>';
             } else {
                 $payer = '<td>Remboursée</td>';
             }
 
             echo '<tr><td>' . $row["util_nom"] . '</td>
-            <td>' . $row["util_prenom"] . '</td>
-            <td>' . dateMySQLToFrLong($row["mis_dateDepart"]) . '</td>
-            <td>' . dateMySQLToFrLong($row["mis_dateRetour"]) . '</td>
-            <td>' . $row["com_nom"] . ' (' . $row["com_CP"] . ')' . '</td>
-            <td>' . $montant . ' </td>' . $payer . '</tr>';
+                <td>' . $row["util_prenom"] . '</td>
+                <td>' . dateMySQLToFrLong($row["mis_dateDepart"]) . '</td>
+                <td>' . dateMySQLToFrLong($row["mis_dateRetour"]) . '</td>
+                <td>' . $row["com_nom"] . ' (' . $row["com_CP"] . ')' . '</td>
+                <td>' . $montant . ' </td>' . $payer . '</tr>';
         }
 
-echo '</tbody></table>';
-?>
+        echo '</tbody></table>';
+        ?>
+    </div>
+
+    <!-- Link vers jQuery et Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

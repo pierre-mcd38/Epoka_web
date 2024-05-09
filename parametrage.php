@@ -42,7 +42,7 @@ if ($_SESSION["util_responsable"] == 1) {
 
       ?>
 
-      <form name="indemnité" method="post" action="updateParametrage.php">
+      <form name="indemnité" method="post" action="MajParametrage.php">
          <div class="form-outline mb-4">
             <label class="form-label" for="par_MtauKM" style="font-size:smaller; ">Remboursement au kilométrage
                :</label>
@@ -54,7 +54,7 @@ if ($_SESSION["util_responsable"] == 1) {
                journalié :</label>
             <input type="number" name="par_MtHebergement" style="margin-right:10px" class="form-control text-center">
          </div>
-         <input type="submit" class="btn btn-sm btn-outline-dark" placeholder="Modifier">
+         <input type="submit" class="btn btn-sm btn-outline-dark" value="Envoyer">
       </form>
    </div>
 
