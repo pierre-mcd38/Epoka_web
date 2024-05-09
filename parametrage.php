@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <title>Paramétrage</title>
-<?php include('header.php');
+<?php include ('header.php');
 // Initialiser la session
 session_start();
 // Vérifiez si l'utilisateur est connecté, sinon redirigez-le vers la page de connexion
@@ -28,7 +28,7 @@ if ($_SESSION["util_responsable"] == 1) {
       <h3 class="my-3">Paramétrage de l'application</h3>
 
       <?php
-      require("config.php");
+      require ("config.php");
 
       // Connexion à la base de données avec PDO
       try {
@@ -44,12 +44,14 @@ if ($_SESSION["util_responsable"] == 1) {
 
       <form name="indemnité" method="post" action="updateParametrage.php">
          <div class="form-outline mb-4">
-            <label class="form-label" for="par_MtauKM" style="font-size:smaller; ">Remboursement au kilométrage :</label>
+            <label class="form-label" for="par_MtauKM" style="font-size:smaller; ">Remboursement au kilométrage
+               :</label>
             <input type="text" name="par_MtauKM" style="margin-right:10px" class="form-control text-center">
          </div>
 
          <div class="form-outline mb-4">
-            <label class="form-label" for="par_MtHebergement" style="font-size:smaller; ">Indemnité d'hebergement journalié :</label>
+            <label class="form-label" for="par_MtHebergement" style="font-size:smaller; ">Indemnité d'hebergement
+               journalié :</label>
             <input type="number" name="par_MtHebergement" style="margin-right:10px" class="form-control text-center">
          </div>
          <input type="submit" class="btn btn-sm btn-outline-dark" placeholder="Modifier">
@@ -106,27 +108,31 @@ if ($_SESSION["util_responsable"] == 1) {
                <table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl} rounded-2">
                   <thead>
                      <tr>
-                        <th>De </th>
-                        <th>à</th>
-                        <th>Distance</th>
+                        <th><a href="?sort=ville_de_depart">De </a></th>
+                        <th><a href="?sort=ville_d_arrivee">à</a></th>
+                        <th><a href="?sort=distance">Distance</a></th>
                      </tr>
                   </thead>
                   <tbody>
+                  <tbody>
                      <?php
                      $stmt = $pdo->prepare("SELECT depart.com_nom AS ville_de_depart,
-                     arrive.com_nom AS ville_d_arrivee,
-                     distance.dis_km AS distance,
-                     depart.com_id AS id_debut_com,
-                     arrive.com_id AS id_arrive_com
-                     FROM distance
-                     INNER JOIN commune AS depart ON distance.dis_idCommune1 = depart.com_id
-                     INNER JOIN commune AS arrive ON distance.dis_idCommune2 = arrive.com_id;");
+                                                   arrive.com_nom AS ville_d_arrivee,
+                                                   distance.dis_km AS distance,
+                                                   depart.com_id AS id_debut_com,
+                                                   arrive.com_id AS id_arrive_com
+                                          FROM distance
+                                          INNER JOIN commune AS depart ON distance.dis_idCommune1 = depart.com_id
+                                          INNER JOIN commune AS arrive ON distance.dis_idCommune2 = arrive.com_id
+                                          GROUP BY LEAST(depart.com_nom, arrive.com_nom), GREATEST(depart.com_nom, arrive.com_nom)
+                                          ORDER BY ville_de_depart, ville_d_arrivee;              
+                                             ");
                      $stmt->execute();
 
                      while ($row = $stmt->fetch()) {
-                        echo '<tr><td>' . $row["De"] . '</td>
-                     <td>' . $row["A"] . '</td>
-                     <td>' . $row["distance"] . ' Km' . '</td></tr>';
+                        echo '<tr><td>' . $row["ville_de_depart"] . '</td>
+                                 <td>' . $row["ville_d_arrivee"] . '</td>
+                                 <td>' . $row["distance"] . ' Km' . '</td></tr>';
                      }
                      ?>
                   </tbody>

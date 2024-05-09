@@ -19,7 +19,7 @@
         exit();
     }
     if ($_SESSION["util_responsable"] != 1) {
-        echo '<div class="alert m-5 alert-danger" role="alert">
+        echo '<div class="alert alert-danger m-5" role="alert">
         Vous n\'êtes pas autorisé
         </div>';
         exit();
@@ -46,8 +46,8 @@
         $stmt = $pdo->prepare("SELECT utilisateurs.util_nom, utilisateurs.util_prenom, mission.mis_dateDepart, mission.mis_dateRetour, commune.com_nom, commune.com_CP, mission.mis_id, mission.mis_valide FROM utilisateurs INNER JOIN mission ON utilisateurs.util_id = mission.mis_idUtilisateur INNER JOIN commune ON mission.mis_idCommune = commune.com_id WHERE utilisateurs.util_idResponsable = :id_salarie ORDER BY mission.mis_dateDepart");
         $stmt->execute(array(':id_salarie' => $id_salarie));
 
-        echo '<table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl} rounded-2">
-        <thead>
+        echo '<table class="table table-striped table-bordered text-center">
+        <thead class="thead-light">
             <tr>
                 <th>Nom du salarié</th>
                 <th>Prénom du salarié</th>
@@ -128,13 +128,13 @@
         }
         echo '</tbody></table>';
 
-
-
-
-
         ?>
     </div>
 
+    <!-- Link vers jQuery et Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
