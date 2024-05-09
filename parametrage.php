@@ -64,13 +64,12 @@ if ($_SESSION["util_responsable"] == 1) {
          <div class="col">
             <div class="container text-center">
                <h3 class="my-3">Ajouter une distance</h3>
-               <form name="indemnité" method="post" action="insertTrajet.php">
+               <form name="indemnité" method="post" action="ajoutDistance.php">
                   <div class="form-outline mb-4">
                      <label class="form-label" for="dis_idCommune1" style="font-size:smaller;">De :</label>
                      <select name="dis_idCommune1" class="form-select">
                         <option value="">Sélectionner une commune</option>
                         <?php
-
                         $query = $pdo->query("SELECT * FROM commune ORDER BY com_Nom");
                         while ($commune = $query->fetch()) {
                            echo '<option value="' . $commune['com_id'] . '">' . $commune['com_nom'] . ' (' . $commune['com_CP'] . ')' . '</option>';
@@ -108,9 +107,9 @@ if ($_SESSION["util_responsable"] == 1) {
                <table class="table table-striped text-center table-responsive{-sm|-md|-lg|-xl} rounded-2">
                   <thead>
                      <tr>
-                        <th><a href="?sort=ville_de_depart">De </a></th>
-                        <th><a href="?sort=ville_d_arrivee">à</a></th>
-                        <th><a href="?sort=distance">Distance</a></th>
+                        <th>De</th>
+                        <th>À</th>
+                        <th>Distance</th>
                      </tr>
                   </thead>
                   <tbody>
