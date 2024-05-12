@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  ven. 12 avr. 2024 à 13:56
--- Version du serveur :  10.4.10-MariaDB
--- Version de PHP :  7.3.12
+-- Généré le : dim. 12 mai 2024 à 09:49
+-- Version du serveur : 8.2.0
+-- Version de PHP : 8.2.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `epoka`
+-- Base de données : `epoka`
 --
 
 -- --------------------------------------------------------
@@ -30,8 +29,8 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `agence`;
 CREATE TABLE IF NOT EXISTS `agence` (
-  `age_id` int(11) NOT NULL AUTO_INCREMENT,
-  `age_idCommune` int(11) NOT NULL,
+  `age_id` int NOT NULL AUTO_INCREMENT,
+  `age_idCommune` int NOT NULL,
   PRIMARY KEY (`age_id`),
   KEY `age_idCommune` (`age_idCommune`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
@@ -55,11 +54,11 @@ INSERT INTO `agence` (`age_id`, `age_idCommune`) VALUES
 
 DROP TABLE IF EXISTS `commune`;
 CREATE TABLE IF NOT EXISTS `commune` (
-  `com_id` int(11) NOT NULL AUTO_INCREMENT,
+  `com_id` int NOT NULL AUTO_INCREMENT,
   `com_nom` varchar(255) NOT NULL,
-  `com_CP` int(5) NOT NULL,
-  `com_population` int(10) NOT NULL,
-  `com_categorie` int(1) NOT NULL,
+  `com_CP` int NOT NULL,
+  `com_population` int NOT NULL,
+  `com_categorie` int NOT NULL,
   PRIMARY KEY (`com_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=14271 DEFAULT CHARSET=latin1;
 
@@ -14357,20 +14356,21 @@ INSERT INTO `commune` (`com_id`, `com_nom`, `com_CP`, `com_population`, `com_cat
 
 DROP TABLE IF EXISTS `distance`;
 CREATE TABLE IF NOT EXISTS `distance` (
-  `dis_idCommune1` int(11) NOT NULL,
-  `dis_idCommune2` int(11) NOT NULL,
+  `dis_idCommune1` int NOT NULL,
+  `dis_idCommune2` int NOT NULL,
   `dis_km` float NOT NULL,
   KEY `dis_idCommune1` (`dis_idCommune1`),
   KEY `dis_idCommune2` (`dis_idCommune2`)
-) ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `distance`
 --
 
 INSERT INTO `distance` (`dis_idCommune1`, `dis_idCommune2`, `dis_km`) VALUES
-(1, 37, 56),
-(66, 100, 150);
+(5262, 10675, 115),
+(5262, 11675, 575),
+(1596, 4357, 603);
 
 -- --------------------------------------------------------
 
@@ -14380,30 +14380,26 @@ INSERT INTO `distance` (`dis_idCommune1`, `dis_idCommune2`, `dis_km`) VALUES
 
 DROP TABLE IF EXISTS `mission`;
 CREATE TABLE IF NOT EXISTS `mission` (
-  `mis_id` int(11) NOT NULL AUTO_INCREMENT,
-  `mis_idUtilisateur` int(11) NOT NULL,
-  `mis_idCommune` int(11) NOT NULL,
+  `mis_id` int NOT NULL AUTO_INCREMENT,
+  `mis_idUtilisateur` int NOT NULL,
+  `mis_idCommune` int NOT NULL,
   `mis_dateDepart` date NOT NULL,
   `mis_dateRetour` date NOT NULL,
-  `mis_valide` tinyint(1) NOT NULL DEFAULT 0,
-  `mis_paye` tinyint(1) NOT NULL DEFAULT 0,
+  `mis_valide` tinyint(1) NOT NULL DEFAULT '0',
+  `mis_paye` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`mis_id`),
   KEY `mis_idUtilisateur` (`mis_idUtilisateur`),
   KEY `mis_idCommune` (`mis_idCommune`)
-) ;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `mission`
 --
 
 INSERT INTO `mission` (`mis_id`, `mis_idUtilisateur`, `mis_idCommune`, `mis_dateDepart`, `mis_dateRetour`, `mis_valide`, `mis_paye`) VALUES
-(1, 2, 5262, '2024-03-02', '2024-03-04', 0, 0),
-(2, 1, 5, '2024-01-01', '2024-12-12', 0, 0),
-(3, 1, 10675, '2023-02-21', '2023-03-20', 0, 0),
-(4, 2, 11675, '2023-02-02', '2023-02-20', 0, 0),
-(5, 2, 8, '2023-07-14', '2023-08-10', 0, 0),
-(6, 2, 5262, '2023-07-14', '2023-08-10', 0, 0),
-(7, 2, 10014, '2023-07-14', '2023-08-10', 0, 0);
+(2, 1, 5, '2024-01-01', '2024-01-05', 0, 0),
+(3, 1, 10675, '2023-02-20', '2023-02-27', 0, 0),
+(5, 2, 8, '2023-07-24', '2023-08-02', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -14414,15 +14410,15 @@ INSERT INTO `mission` (`mis_id`, `mis_idUtilisateur`, `mis_idCommune`, `mis_date
 DROP TABLE IF EXISTS `parametres`;
 CREATE TABLE IF NOT EXISTS `parametres` (
   `par_MtauKM` float NOT NULL,
-  `par_MtHebergement` int(11) NOT NULL
-) ;
+  `par_MtHebergement` int NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `parametres`
 --
 
 INSERT INTO `parametres` (`par_MtauKM`, `par_MtHebergement`) VALUES
-(0.1, 120);
+(0.4, 120);
 
 -- --------------------------------------------------------
 
@@ -14432,18 +14428,18 @@ INSERT INTO `parametres` (`par_MtauKM`, `par_MtHebergement`) VALUES
 
 DROP TABLE IF EXISTS `utilisateurs`;
 CREATE TABLE IF NOT EXISTS `utilisateurs` (
-  `util_id` int(11) NOT NULL AUTO_INCREMENT,
+  `util_id` int NOT NULL AUTO_INCREMENT,
   `util_mdp` varchar(50) NOT NULL,
   `util_nom` varchar(50) NOT NULL,
   `util_prenom` varchar(20) NOT NULL,
-  `util_responsable` tinyint(1) NOT NULL DEFAULT 0,
-  `util_Comptable` tinyint(1) NOT NULL DEFAULT 0,
-  `util_idResponsable` int(11) DEFAULT NULL,
-  `util_idAgence` int(11) DEFAULT NULL,
+  `util_responsable` tinyint(1) NOT NULL DEFAULT '0',
+  `util_Comptable` tinyint(1) NOT NULL DEFAULT '0',
+  `util_idResponsable` int DEFAULT NULL,
+  `util_idAgence` int DEFAULT NULL,
   PRIMARY KEY (`util_id`),
   KEY `util_idResponsable` (`util_idResponsable`),
   KEY `util_idAgence` (`util_idAgence`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `utilisateurs`
@@ -14451,7 +14447,8 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 
 INSERT INTO `utilisateurs` (`util_id`, `util_mdp`, `util_nom`, `util_prenom`, `util_responsable`, `util_Comptable`, `util_idResponsable`, `util_idAgence`) VALUES
 (1, '1234', 'DUPOND', 'Jean', 1, 0, NULL, 1),
-(2, '1234', 'Tornabene', 'Alessia', 0, 0, 1, 1);
+(2, '1234', 'Tornabene', 'Alessia', 0, 0, 1, 1),
+(3, '1234', 'Michaud', 'Pierre', 0, 1, NULL, 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
