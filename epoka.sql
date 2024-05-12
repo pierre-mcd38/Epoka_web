@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : dim. 12 mai 2024 à 09:49
+-- Généré le : dim. 12 mai 2024 à 09:59
 -- Version du serveur : 8.2.0
 -- Version de PHP : 8.2.13
 
@@ -14397,8 +14397,8 @@ CREATE TABLE IF NOT EXISTS `mission` (
 --
 
 INSERT INTO `mission` (`mis_id`, `mis_idUtilisateur`, `mis_idCommune`, `mis_dateDepart`, `mis_dateRetour`, `mis_valide`, `mis_paye`) VALUES
-(2, 1, 5, '2024-01-01', '2024-01-05', 0, 0),
-(3, 1, 10675, '2023-02-20', '2023-02-27', 0, 0),
+(2, 2, 5, '2024-01-01', '2024-01-05', 0, 0),
+(3, 2, 10675, '2023-02-20', '2023-02-27', 1, 0),
 (5, 2, 8, '2023-07-24', '2023-08-02', 0, 0);
 
 -- --------------------------------------------------------
@@ -14446,9 +14446,9 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 --
 
 INSERT INTO `utilisateurs` (`util_id`, `util_mdp`, `util_nom`, `util_prenom`, `util_responsable`, `util_Comptable`, `util_idResponsable`, `util_idAgence`) VALUES
-(1, '1234', 'DUPOND', 'Jean', 1, 0, NULL, 1),
-(2, '1234', 'Tornabene', 'Alessia', 0, 0, 1, 1),
-(3, '1234', 'Michaud', 'Pierre', 0, 1, NULL, 1);
+(1, '1234', 'PTIPEU', 'Justin ', 1, 0, NULL, 1),
+(2, '1234', 'TOKETCHUP', 'Thomas ', 0, 0, 1, 1),
+(3, '1234', 'TIMES', 'Vincent ', 0, 1, NULL, 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
